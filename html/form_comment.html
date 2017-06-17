@@ -4,8 +4,19 @@
     <meta charset="UTF-8">
     <title>Комментарии</title>
     <style>
+        form {
+            margin-top: 20px;
+            margin-left: 20px;
+        }
         select, input, textarea{
             width: 300px;
+        }
+        div input {
+            margin-top: 0px;
+        }
+        div p {
+            margin-top: 5px;
+            margin-bottom: 0px;
         }
         .error { border-color: red; }
         .reqiered {
@@ -18,20 +29,61 @@
             display: inline-block;
             margin-left: 20px;
         }
+        #navbar ul {
+          display: none;
+          background-color: #f90;
+          position: absolute;
+          top: 100%;
+        }
+        #navbar li:hover ul { display: block; }
+        #navbar, #navbar ul {
+          margin: 0;
+          padding: 0;
+          list-style-type: none;
+        }
+        #navbar {
+          height: 30px;
+          background-color: #666;
+          padding-left: 25px;
+          min-width: 470px;
+        }
+        #navbar li {
+          float: left;
+          position: relative;
+          height: 100%;
+        }
+        #navbar li a {
+          display: block;
+          padding: 6px;
+          width: 100px;
+          color: #fff;
+          text-decoration: none;
+          text-align: center;
+        }
+        #navbar ul li { float: none; }
+        #navbar li:hover { background-color: #f90; }
+        #navbar ul li:hover { background-color: #666; }
     </style>
     <script>
-        function fSubmit(){
+        function fSubmit(f){
             //Cheack empty or not reqiered fields
             var re = /^\s*$/;
             if (re.test(document.getElementById('fName').value) || re.test(document.getElementById('lName').value) || re.test(document.getElementById('comment').value)) {
                 alert('Необходимо заполнить обязательные поля');
-            }
+            };
             //Send data to server by protocol POST
+            f.submit();
+            return true;
         };
     </script>
 </head>
 <body>
-    <form id="fComment" method="post" action="/comment">
+    <ul id="navbar">
+      <li><a href="/comment">Добавить комментарий</a></li>
+      <li><a href="/stat">Статистика</a></li>
+      <li><a href="/view">Просмотр комментариев</a></li>
+    </ul>
+    <form id="fComment" method="post" action="/comment" onsubmit="fSubmit(this)">
         <div>
             <p>Имя:</p>
             <input type="text" id="fName" name="fName">
@@ -76,7 +128,7 @@
         </div>
         <div>
             <br>
-            <input type="submit" value="Отправить" onclick="fSubmit()">
+            <input type="submit" value="Отправить">
         </div>
     </form>
 

@@ -14,5 +14,3 @@ CREATE TABLE IF NOT EXISTS Comments (
     users_id integer,
     date_time,
     comment text);
-
-select name from sqlite_master;

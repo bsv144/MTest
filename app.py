@@ -39,22 +39,28 @@ def app_admin():
 
 def app_comment(environ):
     if environ['REQUEST_METHOD'] == 'POST':
-        #Обрабатываем ajax запрос по региону
         try:
             request_body_size = int(environ['CONTENT_LENGTH'])
             request_body = environ['wsgi.input'].read(request_body_size)
         except (TypeError, ValueError):
             request_body = 0
-        #print(parse_qs(request_body.decode('utf-8')))
-        #print(type(request_body.decode('utf-8')))
-        with sqlite3.connect(DB_FILE) as conn:
-            cur = conn.cursor()
-            q_param = (parse_qs(request_body.decode('utf-8'))['region'][0],)
-            cicies_list = [row[0] for row in cur.execute("select city from cities inner join regions on cities.region_id = regions.region_id where region = ?;", q_param)]
-        #print(cicies_list)
-        #print(type(cicies_list))
-        #print(",".join(cicies_list))
-        return(",".join(cicies_list))
+        print(request_body.decode('utf-8'))
+        print(len(parse_qs(request_body.decode('utf-8'))))
+        request_body = parse_qs(request_body.decode('utf-8'))
+        if len(request_body) == 1:
+            # Обрабатываем ajax запрос по региону
+            with sqlite3.connect(DB_FILE) as conn:
+                cur = conn.cursor()
+                q_param = (request_body['region'][0],)
+                cicies_list = [row[0] for row in cur.execute("select city from cities inner join regions on cities.region_id = regions.region_id where region = ?;", q_param)]
+            return(",".join(cicies_list))
+        else:
+            #Обработка данных с формы
+            #Вставляем данные формы в БД
+            for x in request_body:
+                print(request_body[x])
+            #Формируем страницу ответа
+            return('Данные записаны успешно')
     else:
         with open('./html/form_comment.html','r',encoding='utf-8') as f:
             padge = f.read()
