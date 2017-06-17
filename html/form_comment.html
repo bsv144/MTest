@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Комментарии</title>
+    <style>
+        select, input, textarea{
+            width: 300px;
+        }
+        .error { border-color: red; }
+        .reqiered {
+            color: red;
+            display: inline-block;
+            margin-left: 20px;
+        }
+        .field {
+            white-space: nowrap;
+            display: inline-block;
+            margin-left: 20px;
+        }
+    </style>
+    <script>
+        function fSubmit(){
+            //Cheack empty or not reqiered fields
+            var re = /^\s*$/;
+            if (re.test(document.getElementById('fName').value) || re.test(document.getElementById('lName').value) || re.test(document.getElementById('comment').value)) {
+                alert('Необходимо заполнить обязательные поля');
+            }
+            //Send data to server by protocol POST
+        };
+    </script>
+</head>
+<body>
+    <form id="fComment" method="post" action="/comment">
+        <div>
+            <p>Имя:</p>
+            <input type="text" id="fName" name="fName">
+            <div class="reqiered">(Обязательное поле)</div>
+        </div>
+        <div>
+            <p>Фамилия:</p>
+            <input type="text" id="lName" name="lName">
+            <div class="reqiered">(Обязательное поле)</div>
+        </div>
+        <div>
+            <p>Отчество:</p>
+            <input type="text" id="mName" name="mName">
+        </div>
+        <div>
+            <p>Регион:</p>
+            <select name="region" id="region" size="1">
+                <option></option>
+                {region}
+            </select>
+        </div>
+        <div>
+            <p>Город:</p>
+            <select name="city" id="city" size="1">
+                //Insert by ajax from field region
+            </select>
+        </div>
+        <div>
+            <p>E-mail:</p>
+            <input type="text" id="email" name="email">
+            <div id="errorMail"></div>
+        </div>
+        <div>
+            <p>Телефон:</p>
+            <input type="text" id="phone" name="phone" value="(код) номер">
+            <div id="errorPhone"></div>
+        </div>
+        <div>
+            <p>Комментарий</p>
+            <textarea type="text" id="comment" name="comment"></textarea>
+            <div class="reqiered">(Обязательное поле)</div>
+        </div>
+        <div>
+            <br>
+            <input type="submit" value="Отправить" onclick="fSubmit()">
+        </div>
+    </form>
+
+ <script>
+        region.onchange = function(){
+            var httpRequest;
+            if (window.XMLHttpRequest){
+                httpRequest = new XMLHttpRequest();
+                /*
+                if (httpRequest.overrideMimeType){
+                    httpRequest.overrideMimeType('text/xml');
+                 }
+                 */
+            } else if (windows.ActiveXObject) {
+                try{
+                    httpRequest = new ActiveObject("Msxml2.XMLHTTP");
+                } catch (e) {
+                    try {
+                        httpRequest = new ActiveObject("Microsoft.XMLHTTP");
+                    } catch (e) {}
+                }
+            }
+            if (!httpRequest) {
+                alert('Ошибка при создании объекта XMLHTTP');
+                return false;
+            }
+            httpRequest.onreadystatechange = function()
+            {
+                if (httpRequest.readyState==4 && httpRequest.status==200)
+                {
+                    var city = document.getElementById('city');
+                    //Удаляем старые элементы списка
+                    for (var i=0; i < city.length; i++){
+                        city.options[i].remove();
+                    };
+                    //Добавляем новые елементы в список
+                    var respArray = httpRequest.responseText.split(",");
+                    for(var i=0;i < (respArray.length-1);i++){
+                        var option = document.createElement("option");
+                        option.text = respArray[i];
+                        city.add(option);
+                    };
+                }
+            };
+            httpRequest.open('POST','/comment');
+            httpRequest.send('region=' + this.options[this.selectedIndex].text,true);
+        };
+        //Проверка формата введённой электронной почты при потере фокуса
+        email.onblur = function(){
+            var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            if (! re.test(this.value)){
+                // показать ошибку
+                //this.className = "error";
+                this.classList.add("error");
+                errorMail.innerHTML = 'Неверный формат электронной почты.'
+                //Пока не разобрался, но задержки фокус не вставал куда нужно
+                setTimeout(function() {
+                    document.getElementById('email').focus()
+                }, 10);
+            }else{
+                this.classList.remove("error");
+                errorMail.innerHTML = ''
+            };
+        };
+
+        phone.onchange = function(){
+            var re = /^\(\d{3}\)\s\d{7,8}$/;
+            if (! re.test(this.value)){
+                // показать ошибку
+                //this.className = "error";
+                this.classList.add("error");
+                errorPhone.innerHTML = 'Номер должен быть указан в формате "(код) номер".'
+                //Пока не разобрался, но без задержки фокус не вставал куда нужно
+                setTimeout(function() {
+                    document.getElementById('phone').focus()
+                }, 10);
+            }else{
+                this.classList.remove("error");
+                errorPhone.innerHTML = '';
+            };
+        };
+    </script>
+</body>
+</html>
