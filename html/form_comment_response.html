@@ -2,6 +2,7 @@
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Форма добавления комментария</title>
     <style>
         #navbar ul {
@@ -46,5 +47,10 @@
       <li><a href="/stat">Статистика</a></li>
       <li><a href="/view">Просмотр комментариев</a></li>
     </ul>
+    <p>Даныые формы добавлены в базу.</p>
+    <p>Через несколько секунд будет осуществлён переход на страницу просмотра комментариев</p>
+    <script>
+        setTimeout(document.location.href = "/view",30000);
+    </script>
 </body>
 </html>

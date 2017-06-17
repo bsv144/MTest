@@ -60,7 +60,9 @@ def app_comment(environ):
             for x in request_body:
                 print(request_body[x])
             #Формируем страницу ответа
-            return('Данные записаны успешно')
+            with open('./html/form_comment_response.html', 'r', encoding='utf-8') as f:
+                padge = f.read()
+            return(padge)
     else:
         with open('./html/form_comment.html','r',encoding='utf-8') as f:
             padge = f.read()
